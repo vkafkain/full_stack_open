@@ -29,7 +29,7 @@ const Part = (props) => {
 const Total = (props) => {
   let cont = 0
 
-  props.parts.map((n) => cont += n.exercises)
+  props.parts.map((n) => (cont += n.exercises))
 
   return (
     <>
@@ -58,7 +58,7 @@ const App = () => {
   };
   return (
     <div>
-      <Header course={course.parts} />
+      <Header course={course.name} />
       <Content parts={course.parts} />
       <Total parts={course.parts} />
     </div>
