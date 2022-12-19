@@ -1,6 +1,6 @@
 
 const Country = ({country}) => (
-    <p>{country.name.common}</p>
+    <p>{country.name.common}<button>show</button></p>
 )
 
 const Countries = ({countries}) =>
