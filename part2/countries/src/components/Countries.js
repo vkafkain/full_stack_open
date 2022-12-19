@@ -1,18 +1,16 @@
 
 const Country = ({country}) => (
-    <p>{country.name.official}</p>
+    <p>{country.name.common}</p>
 )
 
-const Countries = ({countries}) => {
-    
-    
-    return(
+const Countries = ({countries}) =>
+    (
     <>
     {countries.map((country) => (
-        <Country country={country} key={country.name.official} />
+        <Country country={country} key={country.name.common} />
     ))}
     </>
 )
-}
+
 
 export default Countries
