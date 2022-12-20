@@ -1,40 +1,45 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import Filter from "./components/Filter";
 import Countries from "./components/Countries";
-import CountryDetails from "./components/CountryDetails";
+import CountryData from "./components/CountryData";
 
 const App = () => {
-  const url = "https://restcountries.com/v3.1/all";
-
-  const [filterName, setFilterName] = useState("");
+  const [query, setQuery] = useState("");
   const [countries, setCountries] = useState([]);
-  
+  const [countriesToShow, setCountriesToShow] = useState([]);
+
   useEffect(() => {
-    axios(url).then((response) => {
-      console.log("promise fulfilled");
+    axios.get("https://restcountries.com/v3.1/all").then((response) => {
       setCountries(response.data);
     });
   }, []);
-  
-  const filterCountries = countries.filter((x) =>
-  x.name.common.toLowerCase().includes(filterName.toLocaleLowerCase())
-  );
-  const maxCountries = 10
-  const showCountryList = filterCountries.length > 1 && filterCountries.length < maxCountries
-  const showMessage = filterCountries.length >= maxCountries && filterName.length > 0
-  const oneCountry = filterCountries.length === 1
 
-  console.log(showCountryList)
-  console.log(filterCountries.length);
+  const handleQueryChange = (event) => {
+    const search = event.target.value;
+    setQuery(search);
+    setCountriesToShow(
+      countries.filter((country) =>
+        country.name.common.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  };
 
   return (
     <div>
-      <Filter filterName={filterName} setFilterName={setFilterName} />
-      {showCountryList && <Countries countries={filterCountries} />
-      }
-      {showMessage && <p>Too many matches, specify another filter</p>}
-      {oneCountry && <CountryDetails countries={filterCountries} />}
+      <div>
+        Find countries <input value={query} onChange={handleQueryChange} />
+      </div>
+      {countriesToShow.length === 1 ? (
+        <CountryData country={countriesToShow[0]} />
+      ) : null}
+      {countriesToShow.length > 10 ? (
+        <div>Too many matches, specify another filter</div>
+      ) : (
+        <Countries
+          countriesToShow={countriesToShow}
+          setCountriesToShow={setCountriesToShow}
+        />
+        )}      
     </div>
   );
 };
