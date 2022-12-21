@@ -1,12 +1,21 @@
 
-const Person = ({ person }) => (
-    <p>{person.name} {person.number}</p>
-)
+const Person = ({ person, deletePerson }) =>{
+    const bannerDelete = () => {
+        if(window.confirm(`Delete ${person.name}?`)){
+            deletePerson()
+        }
+    }
+   return (
+        <p>{person.name} {person.number} {<button onClick={bannerDelete}>delete</button>}</p>
+    )
+}
 
-const Persons = ({persons}) => (
+
+
+const Persons = ({persons, deletePerson}) => (
     <>
     {persons.map((person) => (
-        <Person person={person} key={person.name} />
+        <Person person={person} deletePerson={()=>deletePerson(person)} key={person.name} />
     ))}
     </>
 )

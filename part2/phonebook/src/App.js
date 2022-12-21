@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
+import personService from "./services/persons";
 import Persons from "./components/Persons";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
-import axios from "axios"
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,15 +11,10 @@ const App = () => {
   const [filterName, setFilterName] = useState("");
 
   useEffect(() => {
-    console.log("effect");
-    axios
-      .get("http://localhost:3001/persons")
-      .then(response =>{
-        console.log("promise fulfilled");
-        setPersons(response.data)
-      })
-  }, [])
-  console.log("render", persons.length, "persons");
+    personService.getAll().then((initialList) => {
+      setPersons(initialList);
+    });
+  }, []);
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -30,11 +25,20 @@ const App = () => {
       alert(`${newName} already added to phonebook`);
     } else {
       const personObject = { name: newName, number: newNumber };
-      setPersons(persons.concat(personObject));
-      setNewName("");
-      setNewNumber("");
+      personService.create(personObject).then((response) => {
+        setPersons(persons.concat(response));
+        setNewName("");
+        setNewNumber("");
+      });
     }
   };
+
+  const deletePerson = (person) => 
+    personService
+      .remove(person.id).then((response) => {
+        setPersons(persons.filter((n) => n.id !== person.id))
+      })    
+  
 
   const filterPersons = persons.filter((x) =>
     x.name.toLowerCase().includes(filterName.toLocaleLowerCase())
@@ -63,7 +67,7 @@ const App = () => {
       />
       <h2>Numbers</h2>
       <div>
-        <Persons persons={filterPersons} />
+        <Persons persons={filterPersons} deletePerson={deletePerson} />
       </div>
     </div>
   );
