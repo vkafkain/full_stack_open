@@ -21,24 +21,41 @@ const App = () => {
     const filterName = persons.filter(
       (person) => newName.toLowerCase() === person.name.toLowerCase()
     );
-    if (filterName.length > 0) {
-      alert(`${newName} already added to phonebook`);
+
+    if(filterName.length === 0) {
+      const personObject = { name: newName, number: newNumber}
+      personService
+        .create(personObject)
+        .then((response) => {
+          setPersons(persons.concat(response))
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((err) => alert(console.error(err)))
     } else {
-      const personObject = { name: newName, number: newNumber };
-      personService.create(personObject).then((response) => {
-        setPersons(persons.concat(response));
-        setNewName("");
-        setNewNumber("");
-      });
+      if(window.confirm(`${newName} is already added to phonebook, replace the old number witg a new one?`)){
+        const personObject = { name: newName, number: newNumber}
+        personService
+          .update(filterName[0].id, personObject)
+          .then((response) => {
+            const updateNumber = persons.map((person) => 
+              person.id !== response.id ? person : response
+          );
+            setPersons(updateNumber)
+            setNewName("");
+            setNewNumber("");
+        })
+      }
     }
-  };
+  }
+     
 
   const deletePerson = (person) => 
     personService
       .remove(person.id).then((response) => {
         setPersons(persons.filter((n) => n.id !== person.id))
-      })    
-  
+      })
+
 
   const filterPersons = persons.filter((x) =>
     x.name.toLowerCase().includes(filterName.toLocaleLowerCase())

@@ -23,7 +23,7 @@ const update = (id, newObject) => {
 
 
 const exportedObject = {
-    getAll, create, remove
+    getAll, create, remove, update
 }
 
 export default exportedObject
