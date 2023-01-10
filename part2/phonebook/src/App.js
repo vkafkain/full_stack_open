@@ -10,7 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState("")
   const [newNumber, setNewNumber] = useState("")
   const [filterName, setFilterName] = useState("")
-  const [succesMessage, setSuccesMessage] = useState(null)
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -34,14 +34,16 @@ const App = () => {
           setPersons(persons.concat(response))
           setNewName("");
           setNewNumber("");
-          setSuccesMessage(`Added ${newName}`)
+          setMessage(`Added ${newName}`)
           setTimeout(() =>{
-            setSuccesMessage(null)
+            setMessage(null)
           }, 2000) 
         })
-        .catch((err) => alert(console.error(err)))
+        .catch(error =>  {
+          alert(`error test`)
+        })
     } else {
-      if(window.confirm(`${newName} is already added to phonebook, replace the old number witg a new one?`)){
+      if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
         const personObject = { name: newName, number: newNumber}
         personService
           .update(filterName[0].id, personObject)
@@ -81,7 +83,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={succesMessage} />
+      <Notification message={message} />
       <Filter filterName={filterName} setFilterName={setFilterName} />
       <h2>add a new</h2>
       <PersonForm
