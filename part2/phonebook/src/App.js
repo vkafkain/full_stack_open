@@ -3,18 +3,22 @@ import personService from "./services/persons";
 import Persons from "./components/Persons";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
+import Notification from "./components/Notification";
 
 const App = () => {
-  const [persons, setPersons] = useState([]);
-  const [newName, setNewName] = useState("");
-  const [newNumber, setNewNumber] = useState("");
-  const [filterName, setFilterName] = useState("");
+  const [persons, setPersons] = useState([])
+  const [newName, setNewName] = useState("")
+  const [newNumber, setNewNumber] = useState("")
+  const [filterName, setFilterName] = useState("")
+  const [succesMessage, setSuccesMessage] = useState(null)
 
   useEffect(() => {
-    personService.getAll().then((initialList) => {
-      setPersons(initialList);
-    });
-  }, []);
+    personService
+    .getAll()
+    .then((initialList) => {
+      setPersons(initialList)
+    })
+  }, [])
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -30,6 +34,10 @@ const App = () => {
           setPersons(persons.concat(response))
           setNewName("");
           setNewNumber("");
+          setSuccesMessage(`Added ${newName}`)
+          setTimeout(() =>{
+            setSuccesMessage(null)
+          }, 2000) 
         })
         .catch((err) => alert(console.error(err)))
     } else {
@@ -73,6 +81,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={succesMessage} />
       <Filter filterName={filterName} setFilterName={setFilterName} />
       <h2>add a new</h2>
       <PersonForm
