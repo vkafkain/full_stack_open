@@ -1,48 +1,56 @@
-const { response } = require("express")
-const express = require("express")
-const PORT = 3001
-const app = express()
+const { response } = require("express");
+const express = require("express");
+const PORT = 3001;
+const app = express();
 
-const persons = [
-    {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": 1
-    },
-    {
-      "name": "Ada Lovelace",
-      "number": "39-44-5323523",
-      "id": 2
-    },
-    {
-      "name": "Dan Abramov",
-      "number": "12-43-234345",
-      "id": 3
-    },
-    {
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": 4
-    }
-]
+let persons = [
+  {
+    name: "Arto Hellas",
+    number: "040-123456",
+    id: 1,
+  },
+  {
+    name: "Ada Lovelace",
+    number: "39-44-5323523",
+    id: 2,
+  },
+  {
+    name: "Dan Abramov",
+    number: "12-43-234345",
+    id: 3,
+  },
+  {
+    name: "Mary Poppendieck",
+    number: "39-23-6423122",
+    id: 4,
+  },
+];
 
 app.get("/api/persons", (req, res) => {
-    res.json(persons)
-})
+  res.json(persons);
+});
 
 app.get("/api/persons/:id", (req, res) => {
-    const id = Number(req.params.id)
-    const person = persons.find(person => person.id === id)
+  const id = Number(req.params.id);
+  const person = persons.find((person) => person.id === id);
+  person ? res.json(person) : res.status(404).end();
+});
 
-    person ? res.json(person) : res.status(404).end()
+app.delete("/api/persons/:id", (req, res) => {
+  const id = Number(req.params.id);
+  persons = persons.filter((person) => person.id !== id);
+  res.status(204).end();
+});
+
+app.post("/api/persons/:id", (req, res) => {
+    
 })
 
 app.get("/api/info", (req, res) => {
-    res.send(`<p>Phonebook has info for ${persons.length} people</p>
-    <p>${new Date()}</p>`
-    )
-    })
+  res.send(`<p>Phonebook has info for ${persons.length} people</p>
+    <p>${new Date()}</p>`);
+});
 
 app.listen(PORT, () => {
-    console.log(`Server runing on port ${PORT}`);
-})
+  console.log(`Server runing on port ${PORT}`);
+});
