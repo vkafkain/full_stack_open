@@ -1,7 +1,8 @@
-const { response } = require("express");
 const express = require("express");
 const PORT = 3001;
 const app = express();
+
+app.use(express.json());
 
 let persons = [
   {
@@ -42,9 +43,30 @@ app.delete("/api/persons/:id", (req, res) => {
   res.status(204).end();
 });
 
-app.post("/api/persons/:id", (req, res) => {
-    
-})
+function generatedIdRandom() {
+  const random = Math.floor(Math.random() * (9999999 - 1 + 1) + 1);
+  return random;
+}
+
+app.post("/api/persons", (req, res) => {
+  const body = req.body;
+
+  if (!body.name) {
+    return res.status(400).json({
+      error: "content missing",
+    });
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: generatedIdRandom(),
+  };
+  persons = persons.concat(person);
+
+  console.log(person);
+  res.json(person);
+});
 
 app.get("/api/info", (req, res) => {
   res.send(`<p>Phonebook has info for ${persons.length} people</p>
