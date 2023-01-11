@@ -1,8 +1,12 @@
 const express = require("express");
+const morgan = require("morgan");
 const PORT = 3001;
 const app = express();
 
 app.use(express.json());
+
+morgan.token('body', (req, res) => JSON.stringify(req.body));
+app.use(morgan(':method :url :status :response-time ms - :res[content-length] :body - :req[content-length]'));
 
 let persons = [
   {
@@ -54,6 +58,7 @@ app.post("/api/persons", (req, res) => {
   const findName = persons.findIndex((value) => {
     return value.name === body.name;
   });
+
   const findNumber = persons.findIndex((value) => {
     return value.number === body.number;
   });
