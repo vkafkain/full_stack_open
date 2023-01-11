@@ -51,9 +51,27 @@ function generatedIdRandom() {
 app.post("/api/persons", (req, res) => {
   const body = req.body;
 
-  if (!body.name) {
+  const findName = persons.findIndex((value) => {
+    return value.name === body.name;
+  });
+  const findNumber = persons.findIndex((value) => {
+    return value.number === body.number;
+  });
+
+  if (findName > 0) {
     return res.status(400).json({
-      error: "content missing",
+      error: "name must be unique",
+    });
+  }
+  if (findNumber > 0) {
+    return res.status(400).json({
+      error: "number must be unique",
+    });
+  }
+
+  if (!body.name || !body.number) {
+    return res.status(400).json({
+      error: "number and/or name not entered",
     });
   }
 
@@ -64,7 +82,6 @@ app.post("/api/persons", (req, res) => {
   };
   persons = persons.concat(person);
 
-  console.log(person);
   res.json(person);
 });
 
