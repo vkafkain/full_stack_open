@@ -2,7 +2,7 @@
 const Person = ({ person, deletePerson }) =>{
     const bannerDelete = () => {
         if(window.confirm(`Delete ${person.name}?`)){
-            deletePerson()
+            deletePerson(person.id)
         }
     }
    return (
@@ -15,7 +15,7 @@ const Person = ({ person, deletePerson }) =>{
 const Persons = ({persons, deletePerson}) => (
     <>
     {persons.map((person) => (
-        <Person person={person} deletePerson={()=>deletePerson(person)} key={person.name} />
+        <Person person={person} deletePerson={deletePerson} key={person.id} />
     ))}
     </>
 )

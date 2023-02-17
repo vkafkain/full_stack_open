@@ -60,11 +60,21 @@ const App = () => {
   }
      
 
-  const deletePerson = (person) => 
+  const deletePerson = (id) => {
+    const filteredPerson = persons.find(person => person.id === id)   
+    const personName = filteredPerson.name;
+    const personId = filteredPerson.id;
     personService
-      .remove(person.id).then((response) => {
-        setPersons(persons.filter((n) => n.id !== person.id))
+      .remove(personId)
+      .then(() => {
+       setMessage(`Removed ${personName}`)
+        setPersons(persons.filter((person) => person.id !== personId))
       })
+      .catch((err) => {
+        setMessage(`Error deleting person : ${err.response.data.error}`)
+      })
+
+  }
 
 
   const filterPersons = persons.filter((x) =>

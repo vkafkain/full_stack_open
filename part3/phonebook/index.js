@@ -18,21 +18,31 @@ app.use(
 );
 
 app.get('/api/persons', (req, res) => {
-  Person.find({}).then((persons) => {
-    res.json(persons);
-  });
+  Person.find({})
+    .then((person) => {
+      person ? res.json(person) : res.status(404).end();
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).send();
+    });
 });
 
-app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const person = Person.find((person) => person.id === id);
-  person ? res.json(person) : res.status(404).end();
+app.get('/api/persons/:id', (req, res, next) => {
+  Person.findById(Number(req.params.id))
+    .then((person) => {
+      person ? res.json(person) : res.status(404).end();
+    })
+    .catch((error) => next(error));
 });
 
-app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id);
-  persons = persons.filter((person) => person.id !== id);
-  res.status(204).end();
+app.delete('/api/persons/:id', (req, res, next) => {
+  const id = req.params.id;
+  Person.findByIdAndRemove(id)
+    .then(() => {
+      res.status(204).end();
+    })
+    .catch((err) => next(err));
 });
 
 function generatedIdRandom() {
@@ -67,11 +77,20 @@ app.get('api/info', (request, response, next) => {
 });
 
 const endPoint404 = (req, res) => {
-  res.status(404).send({error: "Not Found"})
-}
+  res.status(404).send({ error: 'Not Found' });
+};
 
 app.use(endPoint404);
 
+const errorHandler = (err, req, res, next) => {
+  console.log(err.message);
+  if (err.name === 'CastError') {
+    return res.status(400).send({ err: 'malformatted id' });
+  }
+  next(err);
+};
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server runing on port ${PORT}`);
