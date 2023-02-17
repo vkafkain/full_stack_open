@@ -18,9 +18,9 @@ app.use(
 );
 
 app.get('/api/persons', (req, res) => {
-  Person.find({}).then(notes => {
-    res.json(notes)
-  })
+  Person.find({}).then((persons) => {
+    res.json(persons);
+  });
 });
 
 app.get('/api/persons/:id', (req, res) => {
@@ -42,22 +42,36 @@ function generatedIdRandom() {
 
 app.post('/api/persons', (req, res) => {
   const body = req.body;
-  if(body.name | body.number === undefined) {
-    return res.status(400).json({error: 'content missing'});
+  if (body.name | (body.number === undefined)) {
+    return res.status(400).json({ error: 'content missing' });
   }
   const person = new Person({
     name: body.name,
     number: body.number,
-  })
-  person.save().then(savedPerson => {
-    res.json(savedPerson)
-  })
+  });
+  person.save().then((savedPerson) => {
+    res.json(savedPerson);
+  });
 });
 
-app.get('/api/info', (req, res) => {
-  res.send(`<p>Phonebook has info for ${persons.length} people</p>
-    <p>${new Date()}</p>`);
+app.get('api/info', (request, response, next) => {
+  Person.find({})
+    .then((people) => {
+      response.send(
+        `<p>Phonebook has info for ${
+          people.length
+        } people</p><p>${new Date()}</p>`
+      );
+    })
+    .catch((error) => next(error));
 });
+
+const endPoint404 = (req, res) => {
+  res.status(404).send({error: "Not Found"})
+}
+
+app.use(endPoint404);
+
 
 app.listen(PORT, () => {
   console.log(`Server runing on port ${PORT}`);
