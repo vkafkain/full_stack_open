@@ -22,11 +22,7 @@ app.get('/api/persons', (req, res) => {
     .then((person) => {
       person ? res.json(person) : res.status(404).end();
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(400).send();
-    });
-});
+  });
 
 app.get('/api/persons/:id', (req, res, next) => {
   Person.findById(Number(req.params.id))
@@ -45,10 +41,6 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-function generatedIdRandom() {
-  const random = Math.floor(Math.random() * (9999999 - 1 + 1) + 1);
-  return random;
-}
 
 app.post('/api/persons', (req, res) => {
   const body = req.body;
@@ -86,6 +78,8 @@ const errorHandler = (err, req, res, next) => {
   console.log(err.message);
   if (err.name === 'CastError') {
     return res.status(400).send({ err: 'malformatted id' });
+  } else if (err.name === "ValidationError") {
+    return res.status(400).json({ error: err.message});
   }
   next(err);
 };
