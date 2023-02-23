@@ -23,7 +23,8 @@ app.get('/api/persons', (req, res) => {
     })
   });
 app.get('/api/persons/:id', (req, res, next) => {
-  Person.findById(Number(req.params.id))
+  const id = req.params.id;
+  Person.findById(id)
     .then((person) => {
       person ? res.json(person) : res.status(404).end();
     })
@@ -67,12 +68,12 @@ app.put('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error))
 
 })
-app.get('api/info', (request, response, next) => {
+app.get('/info', (req, res, next) => {
   Person.find({})
-    .then((people) => {
-      response.send(
+    .then((person) => {
+      res.send(
         `<p>Phonebook has info for ${
-          people.length
+          person.length
         } people</p><p>${new Date()}</p>`
       );
     })
