@@ -22,11 +22,11 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    const filterName = persons.filter(
-      (person) => newName.toLowerCase() === person.name.toLowerCase()
+    const namefilter = persons.filter(
+      (person) => newName.trim().toLowerCase() === person.name.trim().toLowerCase()
     );
 
-    if(filterName.length === 0) {
+    if(namefilter.length === 0) {
       const personObject = { name: newName, number: newNumber}
       personService
         .create(personObject)
@@ -40,20 +40,27 @@ const App = () => {
           }, 2000) 
         })
         .catch(error =>  {
-          alert(`error test`)
+          alert(`Error: ${error.response.data.error}`)
         })
     } else {
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
-        const personObject = { name: newName, number: newNumber}
+        const personObject = { ...namefilter[0], number: newNumber}
         personService
-          .update(filterName[0].id, personObject)
+          .update(namefilter[0].id, personObject)
           .then((response) => {
-            const updateNumber = persons.map((person) => 
+            const updatePerson = persons.map((person) => 
               person.id !== response.id ? person : response
           );
-            setPersons(updateNumber)
+            setPersons(updatePerson)
             setNewName("");
             setNewNumber("");
+            setMessage(`Update ${response.name}`);
+            setTimeout(() => {
+              setMessage(null);
+            }, 2000);
+        })
+        .catch((error) => {
+          alert(`Error: ${error.response.data.error}`)
         })
       }
     }
