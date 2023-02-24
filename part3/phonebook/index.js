@@ -38,7 +38,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
     })
     .catch((err) => next(err));
 });
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const body = req.body;
   if (body.name | (body.number === undefined)) {
     return res.status(400).json({ error: 'content missing' });
@@ -47,9 +47,13 @@ app.post('/api/persons', (req, res) => {
     name: body.name,
     number: body.number,
   });
-  person.save().then((savedPerson) => {
-    res.json(savedPerson);
-  });
+  person
+    .save()
+    .then(savedPerson => savedPerson.toJSON())
+    .then(savedAndFormattedPerson => {
+      res.json(savedAndFormattedPerson);
+  })
+  .catch(error => next(error));
 });
 app.put('/api/persons/:id', (req, res, next) => {
   const id = req.params.id;
@@ -61,7 +65,7 @@ app.put('/api/persons/:id', (req, res, next) => {
     name: body.name,
     number: body.number,
   }
-  Person.findByIdAndUpdate(id, person, {new: true})
+  Person.findByIdAndUpdate(id, person, {new: true}, { runValidators: true })
     .then(updatePerson => {
       res.json(updatePerson);
     })
