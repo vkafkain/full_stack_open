@@ -1,10 +1,8 @@
 const mongoose = require('mongoose');
 
-const password = process.argv[2];
 const name = process.argv[3];
 const number = process.argv[4];
-
-const url = process.env.DB_URL
+const url = process.env.DB_URL;
 
 mongoose.set('strictQuery', false);
 mongoose.connect(url);
