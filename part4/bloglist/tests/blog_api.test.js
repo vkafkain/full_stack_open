@@ -89,7 +89,7 @@ test('if likes missing default value = 0', async () => {
   expect(newAdded.likes).toBe(0)
 })
 
-/* test('if title or url missing throw error 400', async () => {
+test('if title or url missing throw error 400', async () => {
   const noTitle = {
     author: 'Nadal',
     url: 'www.usopen.com',
@@ -104,9 +104,12 @@ test('if likes missing default value = 0', async () => {
     .post('/api/blogs')
     .send(noTitle)
     .expect(400)
-    .expect('Content-Type', /application\/json/)
 
-}) */
+  await api
+    .post('/api/blogs')
+    .send(noUrl)
+    .expect(400)
+})
 
 afterAll(() => {
   mongoose.connection.close()
