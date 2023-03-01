@@ -111,6 +111,10 @@ test('if title or url missing throw error 400', async () => {
     .expect(400)
 })
 
+test('blog delete correctly', async () => {
+  
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
