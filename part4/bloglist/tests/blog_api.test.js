@@ -51,7 +51,7 @@ test('new blog can be added', async () => {
     title: 'Federer retired',
     author: 'Nadal',
     url: 'www.usopen.com',
-    likes: 233
+    likes: 300,
   }
   
   await api
@@ -69,6 +69,44 @@ test('new blog can be added', async () => {
     'Federer retired'
   )
 })
+
+test('if likes missing default value = 0', async () => {
+  const newBlog = {
+    title: 'Federer retired',
+    author: 'Nadal',
+    url: 'www.usopen.com',
+  }
+
+  await api 
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const newAdded = response.body.find(blog => blog.title === 'Federer retired')
+
+  expect(newAdded.likes).toBe(0)
+})
+
+/* test('if title or url missing throw error 400', async () => {
+  const noTitle = {
+    author: 'Nadal',
+    url: 'www.usopen.com',
+    likes: '32'
+  }
+  const noUrl = {
+    title: 'Federer retired',
+    author: 'Nadal',
+    likes: '32'
+  }
+  await api 
+    .post('/api/blogs')
+    .send(noTitle)
+    .expect(400)
+    .expect('Content-Type', /application\/json/)
+
+}) */
 
 afterAll(() => {
   mongoose.connection.close()
