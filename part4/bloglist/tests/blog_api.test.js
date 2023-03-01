@@ -15,6 +15,14 @@ test('there are two blogs', async () => {
   const response = await api.get('/api/blogs')
   expect(response.body).toHaveLength(2)
 })
+test('expect _id atributte is called id', async () => {
+  const response = await api.get('/api/blogs')
+  const blogs = response.body
+  blogs.forEach(blog => {
+    expect(blog.id).toBeDefined()
+  })
+})
+
 
 afterAll(() => {
   mongoose.connection.close()
