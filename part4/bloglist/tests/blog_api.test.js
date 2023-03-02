@@ -3,7 +3,6 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 const helper = require('./test_helper')
-
 const Blog = require('../models/blog')
 
 beforeEach(async () => {
@@ -15,6 +14,7 @@ beforeEach(async () => {
     await blogObject.save()
   }
 })
+
 
 
 test('blogs are returned as json', async () => {
@@ -112,7 +112,7 @@ test('if title or url missing throw error 400', async () => {
 })
 
 test('blog delete correctly', async () => {
-  
+
 })
 
 afterAll(() => {
