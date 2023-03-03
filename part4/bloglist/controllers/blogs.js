@@ -12,20 +12,12 @@ blogsRouter.get('/', async (request, response) => {
     response.status(404).end()
   }
 })
-
-const getTokenFrom = request => {
-  const authorization = request.get('authorization')
-  if(authorization && authorization.toLowerCase().startsWith('beared')) {
-    return authorization.substring(7)
-  }
-  return null
-}
   
 blogsRouter.post('/', async (request, response) => {
   const body = request.body
-  const token = getTokenFrom(request)
-  const decodedToken = jwt.verify(token, config.SECRET)
-  if(!token || !decodedToken.id) {
+
+  const decodedToken = jwt.verify(request.token, config.SECRET)
+  if(!request.token || !decodedToken.id) {
     return response.status(401).json({ error: 'token missing or invalid'})
   }
   const user = await User.findById(decodedToken.id)
@@ -40,18 +32,32 @@ blogsRouter.post('/', async (request, response) => {
     url: body.url,
     likes: body.likes || 0,
     user: user._id,
-  })
+  }).populated('user', {username: 1, name: 1})
  
   const savedBlog = await blog.save()
   user.blogs = user.blogs.concat(savedBlog._id)
   await blog.save()
 
-  response.json(savedBlog)
+  response.status(200).json(savedBlog)
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndRemove(request.params.id)
-  response.status(204).end()
+  const user = request.user
+
+  const decodedToken = jwt.verify(request.token, config.SECRET)
+  if(!request.token || !decodedToken.id) {
+    return response.status(401).json({ error: 'token missing or invalid'})
+  }
+  
+  const blog = await Blog.findById(request.params.id)
+
+  if(blog.user.toString() === user.id.toString()) {
+    await Blog.findByIdAndRemove(blog)
+    response.status(204).end()
+  } else {
+    response.status(401).json({ error: 'unhautorized operation' })
+  }
+
 })
 
 blogsRouter.put('/:id', async (request, response) => {
