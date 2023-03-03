@@ -1,4 +1,7 @@
 const logger = require('./logger')
+const config = require('./config')
+const User = require('../models/user')
+const jwt = require('jsonwebtoken')
 
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
@@ -38,7 +41,14 @@ const getTokenFrom = (request, response, next) => {
 }
 
 const userExtractor = (request, response, next) => {
+  const token = request.token
   
+  if(token) {
+    const decodedToken = jwt(token, config.SECRET)
+    const user = User.findById(decodedToken.id)
+    request.user = user
+  }
+  next()
 }
   
 module.exports = {
